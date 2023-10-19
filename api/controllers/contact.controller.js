@@ -5,7 +5,7 @@ const Op = db.Sequelize.Op;
 
 // Create contact
 exports.create = (req, res) => {
-    
+    Contacts.create()
 };
 
 // Get all contacts
