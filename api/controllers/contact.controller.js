@@ -5,7 +5,20 @@ const Op = db.Sequelize.Op;
 
 // Create contact
 exports.create = (req, res) => {
-    Contacts.create()
+    
+    const newContact = {
+        name: req.body.name,
+    };
+    
+    Contacts.create(newContact)
+        .then(contact => {
+            res.send(contact);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred in creating the contact"
+            });
+        });
 };
 
 // Get all contacts
