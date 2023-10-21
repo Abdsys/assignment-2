@@ -1,0 +1,104 @@
+.container {
+    font-family: Arial, sans-serif;
+    width: 350px;
+    border: 1px solid #e1e1e1;
+    border-radius: 5px;
+    padding: 20px;
+    margin: 30px auto;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden; 
+}
+  
+.contact-form, .contact-list ul {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input, button {
+    padding: 10px;
+    border-radius: 5px;
+    outline: none;
+}
+
+input {
+    border: 1px solid #e1e1e1;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+}
+
+button.create {
+    background-color: #4caf50;
+    color: white;
+    width: 100%; 
+}
+
+button.delete {
+    background-color: #f44336;
+    color: white;
+}
+
+.contact-list {
+    margin-top: 20px;
+}
+
+.contact-name {
+    flex: 1;
+}
+
+.contact-list ul {
+    list-style-type: none; 
+    padding: 0; 
+}
+
+.contact-list ul li > div {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+.contact-list ul li div > div {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    border-top: 1px dashed #e1e1e1;
+    padding-top: 10px;
+}
+
+.contact-list ul li div > div ul {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.contact-list ul li div > div ul li {
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+h1, h2 {
+    text-align: center;
+}
+
+/* Controls the width of the "Name" and "Number" inputs */
+.contact-list ul li div > div input[type="text"]:nth-child(1),
+.contact-list ul li div > div input[type="text"]:nth-child(2) {
+    flex: 1;  /* allows it to grow and take up available space */
+    margin-right: 5px;  /* adds a little space between them */
+    width: auto; /* resets fixed width */
+}
+
+.contact-list ul li div > div button {
+    width: auto;  /* resets fixed width */
+    margin-top: 10px;
+    margin-left: 5px; /* space between the button and inputs */
+}
+
+.contact-list ul li div > div ul li button.delete {
+    margin-left: 0;
+}
