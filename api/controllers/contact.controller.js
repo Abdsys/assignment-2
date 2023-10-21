@@ -39,7 +39,7 @@ exports.findOne = (req, res) => {
     
     const contactId = req.params.contactId;
 
-    Contacts.findByPk(contactId)
+    Contacts.findOne({where: {id: contactId }})
         .then(data => {
             res.send(data);
         })
@@ -48,7 +48,6 @@ exports.findOne = (req, res) => {
                 message: err.message || "Some error occurred while getting contact with specified id"
             });
         });
-
 };
 
 // Update one contact by id
