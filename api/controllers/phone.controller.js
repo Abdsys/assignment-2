@@ -5,17 +5,39 @@ const Op = db.Sequelize.Op;
 // Create phone
 exports.create = (req, res) => {
     
-};
+    const contactId = req.params.contactId;
+    const name = req.body.name;
+    const number = req.body.number;
 
-// Get all phones
-exports.findAll = (req, res) => {
-    Phones.findAll()
+    const newPhone = {
+        name: name,
+        number: number,
+        contactId: contactId
+    };
+
+    Phones.create(newPhone)
         .then(data => {
             res.send(data);
         })
         .catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred"
+                message: err.message || "Some error occurred while creating a new phone number"
+            });
+        });
+};
+
+// Get all phones
+exports.findAll = (req, res) => {
+    
+    const contactId = req.params.contactId;
+
+    Phones.findAll({where: { contactId: contactId }})
+        .then(data => {
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: err.message || "Some error occurred while creating a new phone number"
             });
         });
 };
