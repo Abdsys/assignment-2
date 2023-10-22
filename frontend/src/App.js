@@ -7,35 +7,99 @@ function App() {
     const [selectedContact, setSelectedContact] = useState(null);
     const [phoneType, setPhoneType] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [phoneNumbers, setPhoneNumbers] = useState([]);
 
+
+    useEffect(() => {
+        fetch("http://localhost/api/contacts/")
+        .then(response => response.json())
+        .then(data => {
+            setContacts(data);
+            data.forEach(contact => {
+                getPhoneNumber(contact.id);
+            });
+        })
+        .catch(error => console.error("Error fetching contacts:", error));
+    }, []);
+    
+    
     const createContact = () => {
         if (newContactName) {
-            setContacts([...contacts, { name: newContactName, numbers: [] }]);
-            setNewContactName("");
+            fetch("http://localhost/api/contacts/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ name: newContactName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                setContacts(prevContacts => [...prevContacts, data]);
+                setNewContactName("");
+            })
+            .catch(error => console.error("Error creating contact:", error));
         }
     };
 
-    const addPhoneNumber = () => {
-        const updatedContacts = [...contacts];
-        const contact = updatedContacts.find(contact => contact.name === selectedContact);
-        contact.numbers.push({ type: phoneType, number: phoneNumber });
-        setContacts(updatedContacts);
-        setPhoneType("");
-        setPhoneNumber("");
+    const getPhoneNumber = (contactId) => {
+        fetch(`http://localhost/api/contacts/${contactId}/phones`)
+        .then(response => response.json())
+        .then(data => {
+            setContacts(prevContacts => {
+                const updatedContacts = [...prevContacts];
+                const contact = updatedContacts.find(contact => contact.id === contactId);
+                contact.numbers = data;
+                return updatedContacts;
+            });
+        })
+        .catch(error => console.error("Error fetching phone numbers:", error));
+    };    
+    
+
+    const addPhoneNumber = (contactId, type, number) => {
+        fetch(`http://localhost/api/contacts/${contactId}/phones`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ type, number }),
+        })
+        .then(res => res.json())
+        .then(data => {
+            // Fetch the updated list of phone numbers for the contact
+            getPhoneNumber(contactId);
+        })
+        .catch(error => {
+            console.error("Error in adding phone number:", error);
+        });
+    };
+    
+    
+    
+
+    const deleteContact = contactId => {
+        fetch(`http://localhost/api/contacts/${contactId}`, {
+            method: "DELETE"
+        })
+        .then(() => {
+            setContacts(prevContacts => prevContacts.filter(contact => contact.id !== contactId));
+        })
+        .catch(error => console.error("Error deleting contact:", error));
     };
 
-    const deleteContact = name => {
-        const updatedContacts = contacts.filter(contact => contact.name !== name);
-        setContacts(updatedContacts);
+    const deletePhoneNumber = (contactId, phoneId) => {
+        fetch(`http://localhost/api/contacts/${contactId}/phones/${phoneId}`, {
+            method: "DELETE"
+        })
+        .then(() => {
+            const updatedContacts = [...contacts];
+            const contact = updatedContacts.find(contact => contact.id === contactId);
+            contact.numbers = contact.numbers.filter(num => num.id !== phoneId);
+            setContacts(updatedContacts);
+        })
+        .catch(error => console.error("Error deleting phone number:", error));
     };
-
-    const deletePhoneNumber = (name, number) => {
-        const updatedContacts = [...contacts];
-        const contact = updatedContacts.find(contact => contact.name === name);
-        const updatedNumbers = contact.numbers.filter(num => num.number !== number);
-        contact.numbers = updatedNumbers;
-        setContacts(updatedContacts);
-    };
+    
 
     return (
         <div className='container'>
@@ -48,10 +112,10 @@ function App() {
             <button onClick={createContact}>Create Contact</button>
 
             {contacts.map(contact => (
-                <div key={contact.name}>
-                    <h2 onClick={() => setSelectedContact(contact.name)}>{contact.name}</h2>
-                    <button onClick={() => deleteContact(contact.name)}>Delete</button>
-                    {contact.name === selectedContact && (
+                <div key={contact.id}>
+                    <h2 onClick={() => setSelectedContact(contact.id)}>{contact.name}</h2>
+                    <button onClick={() => deleteContact(contact.id)}>Delete</button>
+                    {contact.id === selectedContact && (
                         <div>
                             <input
                                 value={phoneType}
@@ -63,12 +127,12 @@ function App() {
                                 onChange={e => setPhoneNumber(e.target.value)}
                                 placeholder="Phone Number"
                             />
-                            <button onClick={addPhoneNumber}>Add</button>
-                            {contact.numbers.map(num => (
+                            <button onClick={() => addPhoneNumber(contact.id, phoneType, phoneNumber)}>Add</button>
+                            {contact.numbers && contact.numbers.map(num => (
                                 <div key={num.number}>
                                     <span>{num.type}</span>
                                     <span>{num.number}</span>
-                                    <button onClick={() => deletePhoneNumber(contact.name, num.number)}>Delete</button>
+                                    <button onClick={() => deletePhoneNumber(contact.id, num.id)}>Delete</button>
                                 </div>
                             ))}
                         </div>
