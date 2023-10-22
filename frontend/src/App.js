@@ -68,7 +68,7 @@ function App() {
         })
         .then(res => res.json())
         .then(data => {
-            // Fetch the updated list of phone numbers for the contact
+            // To get the updated list of phone numbers for the contact
             getPhoneNumber(contactId);
         })
         .catch(error => {

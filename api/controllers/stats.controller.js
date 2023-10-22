@@ -7,10 +7,10 @@ const Op = db.Sequelize.Op;
 exports.calculate = async (req, res) => {
     
     try {
-        // Get the number of contacts in the database
+        // Count the number of contacts in the database
         const contactCount = await Contacts.count();
 
-        // Get the number of phone numbers in the database
+        // Count the number of phone numbers in the database
         const phoneCount = await Phones.count();
 
         // Get the time of the most recently created contact
@@ -25,7 +25,7 @@ exports.calculate = async (req, res) => {
             attributes: ['createdAt']
         });
 
-        // Send the stats in the response
+        // Send in response
         res.json({
             numberOfContacts: contactCount,
             numberOfPhones: phoneCount,
