@@ -7,19 +7,21 @@ function App() {
     const [selectedContact, setSelectedContact] = useState(null);
     const [phoneType, setPhoneType] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
-    const [phoneNumbers, setPhoneNumbers] = useState([]);
+    const [stats, setStats] = useState({});
+    const [showStats, setShowStats] = useState(false);
 
 
     useEffect(() => {
         fetch("http://localhost/api/contacts/")
-        .then(response => response.json())
-        .then(data => {
-            setContacts(data);
-            data.forEach(contact => {
-                getPhoneNumber(contact.id);
-            });
-        })
-        .catch(error => console.error("Error fetching contacts:", error));
+            .then(response => response.json())
+            .then(data => {
+                setContacts(data);
+                data.forEach(contact => {
+                    getPhoneNumber(contact.id);
+                });
+            })
+            .catch(error => console.error("Error fetching contacts:", error));
+        getStats();
     }, []);
     
     
@@ -74,9 +76,6 @@ function App() {
         });
     };
     
-    
-    
-
     const deleteContact = contactId => {
         fetch(`http://localhost/api/contacts/${contactId}`, {
             method: "DELETE"
@@ -99,11 +98,23 @@ function App() {
         })
         .catch(error => console.error("Error deleting phone number:", error));
     };
+
+    const getStats = () => {
+        fetch("http://localhost/api/stats")
+            .then(res => res.json())
+            .then(data => {
+                setStats(data);
+            })
+            .catch(error => {
+                console.error("Error fetching stats:", error);
+            });
+    };
     
 
     return (
         <div className='container'>
             <h1>Contactor</h1>
+
             <input
                 value={newContactName}
                 onChange={e => setNewContactName(e.target.value)}
@@ -139,6 +150,18 @@ function App() {
                     )}
                 </div>
             ))}
+            <button onClick={() => setShowStats(!showStats)}>View Stats</button>
+            
+            {showStats && (
+                <div className="statistics-container">
+                    <h2>Stats</h2>
+                    <p><strong>Number of Contacts:</strong> {stats.numberOfContacts || 'Wait..'}</p>
+                    <p><strong>Number of Phones:</strong> {stats.numberOfPhones || 'Wait..'}</p>
+                    <p><strong>Latest Contact Time:</strong> {stats.latestContactTime || 'Wait..'}</p>
+                    <p><strong>Oldest Contact Time:</strong> {stats.oldestContactTime || 'Wait..'}</p>
+                    <button onClick={getStats}>Refresh</button>
+                </div>
+            )}
         </div>
     );
 }
